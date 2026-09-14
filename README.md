@@ -2,13 +2,14 @@
 
 Unity-native foundation for Witch Hunter X, a 1–4 player local co-op character-action ARPG.
 
-## Foundation v0.1
+## CombatSandbox v0.2
 
 - Unity 6 + Universal Render Pipeline
-- Input System local-player join/spawn foundation
-- Character motor and camera-target contracts
+- Input System 1–4 player device joining and deterministic spawn composition
+- Camera-relative character movement
+- Cinemachine shared camera that centers and pulls back for the active roster
+- Temporary player prefab and primitive combat arena
 - Combatant health and Handoff event contracts
-- Combat sandbox scene and testable domain logic
+- EditMode and PlayMode validation
 
 The previous web prototype remains a separate project. This repository is the Unity truth source.
-

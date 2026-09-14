@@ -9,6 +9,7 @@ namespace WHX.Player
         [SerializeField, Min(0f)] private float moveSpeed = 7f;
         [SerializeField, Min(0f)] private float turnSpeed = 900f;
         [SerializeField] private float gravity = -25f;
+        [SerializeField] private Transform movementReference;
 
         private CharacterController characterController;
         private PlayerInputReader input;
@@ -22,7 +23,7 @@ namespace WHX.Player
 
         private void Update()
         {
-            Vector3 planar = new Vector3(input.Move.x, 0f, input.Move.y);
+            Vector3 planar = CalculatePlanarDirection(input.Move, movementReference);
             if (planar.sqrMagnitude > 1f)
             {
                 planar.Normalize();
@@ -41,6 +42,23 @@ namespace WHX.Player
             Vector3 velocity = planar * moveSpeed + Vector3.up * verticalVelocity;
             characterController.Move(velocity * Time.deltaTime);
         }
+
+        public void SetMovementReference(Transform reference)
+        {
+            movementReference = reference;
+        }
+
+        public static Vector3 CalculatePlanarDirection(Vector2 moveInput, Transform reference)
+        {
+            Vector3 forward = reference != null ? reference.forward : Vector3.forward;
+            Vector3 right = reference != null ? reference.right : Vector3.right;
+            forward.y = 0f;
+            right.y = 0f;
+            forward.Normalize();
+            right.Normalize();
+
+            Vector3 direction = right * moveInput.x + forward * moveInput.y;
+            return direction.sqrMagnitude > 1f ? direction.normalized : direction;
+        }
     }
 }
-

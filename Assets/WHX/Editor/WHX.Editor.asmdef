@@ -1,0 +1,14 @@
+{
+  "name": "WHX.Editor",
+  "rootNamespace": "WHX.Editor",
+  "references": [
+    "WHX.Runtime",
+    "Unity.InputSystem",
+    "Unity.Cinemachine"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "autoReferenced": true
+}
+

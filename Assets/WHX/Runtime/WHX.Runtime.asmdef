@@ -2,8 +2,8 @@
   "name": "WHX.Runtime",
   "rootNamespace": "WHX",
   "references": [
-    "Unity.InputSystem"
+    "Unity.InputSystem",
+    "Unity.Cinemachine"
   ],
   "autoReferenced": true
 }
-

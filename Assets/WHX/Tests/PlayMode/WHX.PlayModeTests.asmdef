@@ -1,0 +1,14 @@
+{
+  "name": "WHX.PlayModeTests",
+  "rootNamespace": "WHX.Tests.PlayMode",
+  "references": [
+    "WHX.Runtime",
+    "Unity.InputSystem",
+    "Unity.Cinemachine"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "autoReferenced": false
+}
+
