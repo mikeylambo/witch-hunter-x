@@ -1,0 +1,9 @@
+{
+  "name": "WHX.Runtime",
+  "rootNamespace": "WHX",
+  "references": [
+    "Unity.InputSystem"
+  ],
+  "autoReferenced": true
+}
+

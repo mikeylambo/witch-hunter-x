@@ -1,0 +1,15 @@
+{
+  "name": "WHX.EditModeTests",
+  "rootNamespace": "WHX.Tests",
+  "references": [
+    "WHX.Runtime"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "autoReferenced": false
+}
+
