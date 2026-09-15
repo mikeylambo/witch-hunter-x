@@ -2,7 +2,8 @@
   "name": "WHX.EditModeTests",
   "rootNamespace": "WHX.Tests",
   "references": [
-    "WHX.Runtime"
+    "WHX.Runtime",
+    "Unity.InputSystem"
   ],
   "optionalUnityReferences": [
     "TestAssemblies"
@@ -12,4 +13,3 @@
   ],
   "autoReferenced": false
 }
-

@@ -1,6 +1,6 @@
 # Witch Hunter X Unity Project Context
 
-Last analyzed: 2026-09-14 (`unity` branch, CombatSandbox v0.2)
+Last analyzed: 2026-09-15 (`unity` branch, Character Integration v0.25)
 
 ## Project summary
 
@@ -30,20 +30,26 @@ Feature-oriented first-party code lives under `Assets/WHX`. Runtime assemblies m
 
 ## Startup and scenes
 
-`Assets/WHX/Scenes/CombatSandbox.unity` is the enabled development startup scene. It hosts the `PlayerInputManager` / `LocalPlayerRoster` composition root, four spawn points, temporary arena geometry, a HUD, and a Cinemachine shared adaptive camera. New keyboard/gamepad devices join on button press, up to four players.
+`Assets/WHX/Scenes/CombatSandbox.unity` is the enabled development startup scene. It hosts the `PlayerInputManager` / `LocalPlayerRoster` composition root, four spawn points, temporary arena geometry, a HUD, and a Cinemachine shared adaptive camera. New keyboard/gamepad devices join on button press, up to four players. The manager spawns `PlayerBase`; `PlayerCharacterSelector` assigns Riven, Morrow, Vale, Knox presentations by player index. Full player prefab variants exist for character-specific authoring while gameplay components stay on the shared base.
+
+## Character Integration v0.25
+
+The unmodified source GLBs were copied from `origin/main:public/assets/` into `Assets/WHX/Art/Characters/{Character}/Source/`. Blender-derived FBXs are stored separately under each `Model/` folder; no source GLB or web-branch file was changed. Models use a common Unity-facing root, forward axis, floor grounding, and 1.8 m visible height. `PlayerBase` has a 1.8 m tall, 0.83 m radius CharacterController sized against all four imported render bounds, a presentation root, camera target, ground probe, right/left weapon sockets, and projectile origin. The v0.25 presentation has no production moveset or root-motion locomotion.
+
+Riven, Vale, and Knox import with valid Humanoid avatars. Morrow's Unreal-style source skeleton fails Unity's Humanoid avatar validation and is imported as Generic pending rig repair; no invalid Humanoid avatar is assigned. Editor asset tests verify all four variants' visual ground placement and controller height/radius fit. PlayMode tests verify all four can be spawned in distinct sandbox slots with their correct presentation and existing movement component.
 
 ## Testing and validation
 
-EditMode tests cover deterministic health, Handoff rules, camera-relative movement, and adaptive framing math. PlayMode tests validate the built scene composition and distinct roster spawn placement. Unity Editor compilation, Console inspection, and both suites are required after runtime changes.
+EditMode tests cover deterministic health, Handoff rules, camera-relative movement, adaptive framing math, character prefab composition, and visible ground/controller-height fit. PlayMode tests validate scene composition, roster spawn placement, and four-character presentation selection. Unity Editor compilation, Console inspection, and both suites are required after runtime changes.
 
 ## Unity tooling
 
-Unity CLI 1.0.0-beta.9 is installed. No project-side Unity MCP bridge or client configuration is present; the running Editor also reports no Pipeline package. Repository and headless Editor workflows are available. If live Editor automation is added, use one provider only; CoplayDev/unity-mcp is the recommended fit for broad editor automation without assuming a Unity AI subscription.
+Unity CLI 1.0.0-beta.9 is installed. The sole Unity MCP bridge is CoplayDev/unity-mcp v10.0.0, pinned as `com.coplaydev.unity-mcp` in the package manifest. Its Codex HTTP client entry points to `http://127.0.0.1:8080/mcp`, and CoplayDev HTTP auto-start is enabled for this Editor. A live headless Editor session reported `Server ready` and `Session connected`; an MCP `initialize` handshake returned protocol `2025-03-26` and server `mcp-for-unity-server` v3.4.7. The validation session was stopped afterward. No second Unity MCP bridge was added.
 
 ## Constraints and unknowns
 
-- Four character GLBs are not present in this workspace yet.
-- Production character rigs, lock-on behavior, combat timing, camera obstacle handling, and arena boundary polish remain milestone work.
+- Morrow's Humanoid avatar needs a rig-specific repair before animation retargeting.
+- Production movesets, lock-on behavior, combat timing, camera obstacle handling, and arena boundary polish remain milestone work.
 - Online networking and monetization are out of scope for Foundation v0.1.
 - Do not migrate the web prototype line-for-line or merge its repository into this one.
 

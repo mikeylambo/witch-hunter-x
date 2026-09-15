@@ -44,7 +44,11 @@ namespace WHX.CameraSystem
             {
                 if (roster.Players[i] != null)
                 {
-                    positions.Add(roster.Players[i].transform.position);
+                    PlayerCombatAnchors anchors = roster.Players[i].GetComponent<PlayerCombatAnchors>();
+                    Transform target = anchors != null && anchors.CameraTarget != null
+                        ? anchors.CameraTarget
+                        : roster.Players[i].transform;
+                    positions.Add(target.position);
                 }
             }
 
@@ -89,4 +93,3 @@ namespace WHX.CameraSystem
         }
     }
 }
-

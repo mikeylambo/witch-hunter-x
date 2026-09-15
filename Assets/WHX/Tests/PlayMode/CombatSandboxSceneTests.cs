@@ -51,7 +51,7 @@ namespace WHX.Tests.PlayMode
 
             roster.OnPlayerJoined(inputA);
             roster.OnPlayerJoined(inputB);
-            yield return null;
+            for (int frame = 0; frame < 5; frame++) yield return null;
 
             Assert.That(playerA.transform.position, Is.EqualTo(spawnA.position));
             Assert.That(playerB.transform.position, Is.EqualTo(spawnB.position));
@@ -62,6 +62,37 @@ namespace WHX.Tests.PlayMode
             Object.Destroy(spawnB.gameObject);
             Object.Destroy(playerA);
             Object.Destroy(playerB);
+        }
+
+        [UnityTest]
+        public IEnumerator Sandbox_FourJoinedPlayersSelectDistinctProductionCharacters()
+        {
+            yield return SceneManager.LoadSceneAsync("CombatSandbox", LoadSceneMode.Single);
+            PlayerInputManager manager = Object.FindAnyObjectByType<PlayerInputManager>();
+            LocalPlayerRoster roster = Object.FindAnyObjectByType<LocalPlayerRoster>();
+            Assert.That(manager.playerPrefab.GetComponent<PlayerCharacterSelector>(), Is.Not.Null);
+
+            PlayerInput[] players = new PlayerInput[4];
+            for (int index = 0; index < players.Length; index++)
+            {
+                GameObject instance = Object.Instantiate(manager.playerPrefab);
+                players[index] = instance.GetComponent<PlayerInput>();
+                roster.OnPlayerJoined(players[index]);
+                instance.GetComponent<PlayerCharacterSelector>().SelectForPlayerIndex(index);
+            }
+            for (int frame = 0; frame < 5; frame++) yield return null;
+
+            for (int index = 0; index < players.Length; index++)
+            {
+                GameObject player = players[index].gameObject;
+                Assert.That(player.GetComponent<PlayerCharacterIdentity>().Character, Is.EqualTo((PlayerCharacter)index));
+                Assert.That(player.GetComponent<PlayerCharacterSelector>().ActivePresentation, Is.Not.Null);
+                Assert.That(player.GetComponent<CharacterMotor>(), Is.Not.Null);
+                Assert.That(player.transform.position.y, Is.EqualTo(0f).Within(0.1f));
+                Assert.That(player.GetComponent<PlayerCombatAnchors>().CameraTarget, Is.Not.Null);
+            }
+            Assert.That(roster.Players.Count, Is.EqualTo(4));
+            foreach (PlayerInput player in players) Object.Destroy(player.gameObject);
         }
     }
 }
