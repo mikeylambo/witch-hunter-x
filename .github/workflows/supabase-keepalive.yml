@@ -1,0 +1,53 @@
+# Supabase free-tier keep-alive.
+# Free projects auto-pause after ~7 days idle; this pings each one every 3 days so
+# they stay awake. Reusable across all your games — add one line per project below.
+#
+# WHERE THIS GOES: put this file at  .github/workflows/supabase-keepalive.yml
+# in a GitHub repo you keep active (e.g. one of your game repos). See the caveat
+# at the bottom about repo activity.
+#
+# The apikey below is the PUBLISHABLE / anon key — it is safe to expose (it already
+# ships inside the game client and is protected by Row-Level Security). No secrets
+# required, though you can move the keys to repo Secrets if you prefer.
+
+name: Supabase keep-alive
+
+on:
+  schedule:
+    - cron: "0 9 */3 * *"      # every 3 days at 09:00 UTC (pause window is ~7 days)
+  workflow_dispatch: {}          # also gives you a manual "Run workflow" button
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping each Supabase project
+        run: |
+          # One entry per PROJECT (not per game): "<project-ref> <publishable-or-anon-key> <table>"
+          # With the consolidated backend you only need the ONE shared project — every
+          # game writes to it, so a single ping keeps ALL their leaderboards awake.
+          #
+          # The shared `leaderboards` project (iysvarvkltihgosbhtaa) hosts, as of 2026-09-18:
+          #   scores              -> Neon Striker (game-tagged)
+          #   daily_scores        -> Orbital Coil (+ submit_daily_score)
+          #   leaderboard_scores  -> SIGNAL       (+ submit_score)
+          #   (living-loop + Foolscap/longhand join here when they go live)
+          # Pinging any one table keeps the whole project alive, so `scores` covers them all.
+          PROJECTS=(
+            "iysvarvkltihgosbhtaa sb_publishable_7Kxs-F6HGMgZmb86V1b9_A_qtyUerCh scores"   # leaderboards (shared, all games)
+            # "<ref> <key> <table>"   # <- any OTHER standalone projects you still want kept awake
+          )
+          fail=0
+          for entry in "${PROJECTS[@]}"; do
+            set -- $entry; REF=$1; KEY=$2; TABLE=$3
+            URL="https://$REF.supabase.co/rest/v1/$TABLE?select=*&limit=1"
+            code=$(curl -s -o /dev/null -w "%{http_code}" "$URL" -H "apikey: $KEY")
+            echo "$REF -> HTTP $code"
+            if [ "$code" != "200" ]; then echo "::warning::$REF returned $code (expected 200)"; fail=1; fi
+          done
+          exit $fail
+
+# CAVEAT: GitHub disables scheduled workflows after ~60 days with NO commits to the
+# repo. If you drop this in a repo you push to regularly, you're fine. If it lives in
+# a repo you never touch, either commit occasionally or use the Vercel-cron option
+# (see the chat) which has no such limit.
